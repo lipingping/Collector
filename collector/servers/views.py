@@ -9,39 +9,36 @@ def ServerDataFetchView(request, server_id, action):
 	XS_SHARING_ALLOWED_ORIGINS = getattr(settings, "XS_SHARING_ALLOWED_ORIGINS", '')
 	XS_SHARING_ALLOWED_METHODS = getattr(settings, "XS_SHARING_ALLOWED_METHODS", ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'])
 	XS_SHARING_ALLOWED_HEADERS = getattr(settings, "XS_SHARING_ALLOWED_HEADERS", [])
-	data = gendata()
-	segment = action
 	print action
-	if action == 'cpu':
-		data = data[:10]
-	elif action == 'memory':
-		data = data[11:20]
-	elif action == 'disks':
-		data = data[21:30]
-	elif action == 'network':
-		data = data[31:40]
-	else:
-		data = data[41:50]
-
-	x = []
-	y = []
-	xData=[]
-	yData=[]
 	series = []
-	for d in data: 
-		x.append(d[0])
-		y.append(d[1])
+	if action == 'cpu':
+		data = gendata(40)
+		series.append({'name':'System','data':data})
+		data = gendata(30)
+		series.append({'name':'User','color':'#aa7722', 'data':data})
+		data = gendata(35)
+		series.append({'name':'WaitIO', 'color':'brown','data':data})
+	elif action == 'memory':
+		data = gendata(83)
+		series.append({'name':'Used', 'data':data})
+		data = gendata(78)
+		series.append({'name':'Swapd','color':'purple',  'data':data})
+	elif action == 'disks':
+		data = gendata(100)
+		series.append({'name':'sda1', 'data':data})
+		data = gendata(90)
+		series.append({'name':'sda2', 'data':data})
+	elif action == 'network':
+		data = gendata(1000)
+		series.append({'name':'recvied','color':'orange', 'data':data})
+		data = gendata(1024)
+		series.append({'name':'transmited','color':'#1fb3bf', 'data':data})
+	else:
+		data = gendata(11)
+		series.append({'name':'Load one', 'data':data})
 
-	series.append({'name':'System', 'data':y})
-	p = 7.89
-	y = []
-	for d in data: 
-		y.append(d[1]+p)
-		p = d[1]
 
-	series.append({'name':'Wait', 'data':y})
-
-	response_data = {'x':x,'series': series}
+	response_data = {'series': series}
 
 	response = HttpResponse(simplejson.dumps(response_data,  ensure_ascii=False))
 
@@ -49,7 +46,20 @@ def ServerDataFetchView(request, server_id, action):
 	response['Access-Control-Allow-Methods'] = ",".join(XS_SHARING_ALLOWED_METHODS)
 	response['Access-Control-Allow-Headers'] = ",".join(XS_SHARING_ALLOWED_HEADERS)
 	return response
-def gendata():
+def gendata(rmax=70):
+	import random
+	i = 0
+	count = 10
+	time = 1387210289
+	data = []
+	while i<10:
+		rand = random.randrange(rmax)
+		time +=  500
+		data.append([time, rand])
+		print time, rand
+		i+=1
+
+	return data
 	return [
 			[1387001219, 28.52843137254901960784],
 			[1387001220, 19.27352941176470588235],
