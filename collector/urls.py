@@ -8,6 +8,8 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'collector.views.home', name='home'),
     # url(r'^collector/', include('collector.foo.urls')),
+    url(r'^tools/', 'collector.tools.views.IndexView', name='ToolsHome'),
+    url(r'^docs/', 'collector.tools.views.IndexView', name='ToolsHome'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

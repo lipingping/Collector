@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.utils import simplejson
+from collector.graphsConfig import fetchGraphConfig
+
 # Create your views here.
 def IndexView(request):
 	return HttpResponse('Fecthing...')
@@ -13,29 +15,30 @@ def ServerDataFetchView(request, server_id, action):
 	series = []
 	if action == 'cpu':
 		data = gendata(40)
-		series.append({'name':'System','data':data})
+		series.append({'name':'System','color':'GoldenRod', 'data':data})
 		data = gendata(30)
-		series.append({'name':'User','color':'#aa7722', 'data':data})
+		series.append({'name':'User','color':'OliveDrab', 'data':data})
 		data = gendata(35)
 		series.append({'name':'WaitIO', 'color':'brown','data':data})
 	elif action == 'memory':
 		data = gendata(83)
-		series.append({'name':'Used', 'data':data})
+		series.append({'name':'Used','color':'CadetBlue', 'data':data})
 		data = gendata(78)
-		series.append({'name':'Swapd','color':'purple',  'data':data})
+		series.append({'name':'Swapd','color':'DarkGray',  'data':data})
 	elif action == 'disks':
 		data = gendata(100)
-		series.append({'name':'sda1', 'data':data})
+		series.append({'name':'sda1','color': 'Teal',  'data':data})
 		data = gendata(90)
-		series.append({'name':'sda2', 'data':data})
+		series.append({'name':'sda2','color': 'SaddleBrown',  'data':data})
 	elif action == 'network':
-		data = gendata(1000)
-		series.append({'name':'recvied','color':'orange', 'data':data})
-		data = gendata(1024)
-		series.append({'name':'transmited','color':'#1fb3bf', 'data':data})
+		network = fetchGraphConfig('network')
+		network.recvied['data'] = gendata(867)
+		network.transmited['data'] = gendata(700)
+		series = network.toSeries()
+
 	else:
 		data = gendata(11)
-		series.append({'name':'Load one', 'data':data})
+		series.append({'name':'Load one','color':'#008B8B',  'data':data})
 
 
 	response_data = {'series': series}
